@@ -1,4 +1,4 @@
--- Uncbr7 HUB - Build A Boat
+-- MatsuHub - Build A Boat
 if game.PlaceId ~= 537413528 then return end
 
 local ScreenGui = Instance.new("ScreenGui", game:GetService("CoreGui"))
@@ -23,8 +23,9 @@ MainFrame.Active, MainFrame.Draggable = true, true
 Instance.new("UICorner", MainFrame)
 applyNeon(MainFrame)
 
-Header.Size, Header.BackgroundColor3, Header.Text = UDim2.new(1, 0, 0, 50), PRETO, "UNCBR7 HUB"
-Header.TextColor3, Header.Font, Header.TextSize = BRANCO, Enum.Font.GothamBold, 18
+-- NOME TROCADO AQUI ABAIXO:
+Header.Size, Header.BackgroundColor3, Header.Text = UDim2.new(1, 0, 0, 50), PRETO, "MATSUHUB BUILD BOAT"
+Header.TextColor3, Header.Font, Header.TextSize = BRANCO, Enum.Font.GothamBold, 15
 Instance.new("UICorner", Header)
 
 local function createBtn(t, p, f)
@@ -77,6 +78,6 @@ local function startFly(s)
     end)
 end
 
-createBtn("AUTO FARM BARCO", UDim2.new(0.075, 0, 0.25, 0), function() startFly(200) end)
-createBtn("AUTO FARM NORMAL", UDim2.new(0.075, 0, 0.48, 0), function() startFly(250) end)
-createBtn("AUTO FARM TURBO", UDim2.new(0.075, 0, 0.71, 0), function() startFly(400) end)
+createBtn("AUTO FARM DE BARCO", UDim2.new(0.075, 0, 0.25, 0), function() startFly(200) end)
+createBtn("AUTO FARM (NORMAL)", UDim2.new(0.075, 0, 0.48, 0), function() startFly(250) end)
+createBtn("AUTO FARM (TURBO)", UDim2.new(0.075, 0, 0.71, 0), function() startFly(400) end)
