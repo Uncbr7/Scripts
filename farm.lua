@@ -1,4 +1,4 @@
--- [[ MATSUHUB BUILD BOAT - OFFICIAL ]] --
+-- [[ MATSUHUB BUILD BOAT - ULTRA FORCE ]] --
 if game.PlaceId ~= 537413528 then return end
 
 local ScreenGui = Instance.new("ScreenGui", game:GetService("CoreGui"))
@@ -23,18 +23,18 @@ ToggleBtn.BackgroundColor3, ToggleBtn.Text = BLACK, "M"
 ToggleBtn.TextColor3, ToggleBtn.Font, ToggleBtn.TextSize = WHITE, Enum.Font.GothamBold, 25
 Instance.new("UICorner", ToggleBtn); applyNeon(ToggleBtn)
 
--- Menu
+-- Menu Principal
 MainFrame.Size, MainFrame.Position = UDim2.new(0, 260, 0, 250), UDim2.new(0.5, -130, 0.5, -125)
 MainFrame.BackgroundColor3, MainFrame.Visible = BLACK, true
 MainFrame.Active, MainFrame.Draggable = true, true
 Instance.new("UICorner", MainFrame); applyNeon(MainFrame)
 
--- Título (Branco)
+-- Título
 Header.Parent, Header.Size = MainFrame, UDim2.new(1, 0, 0, 50)
 Header.BackgroundTransparency, Header.Text = 1, "MATSUHUB BUILD BOAT"
 Header.TextColor3, Header.Font, Header.TextSize = WHITE, Enum.Font.GothamBold, 17
 
--- Botão Parar Auto Farm (Aparece no travamento)
+-- Botão Parar Auto Farm (Externo)
 StopBtn.Size, StopBtn.Position = UDim2.new(0, 180, 0, 50), UDim2.new(0.5, -90, 0.7, 0)
 StopBtn.BackgroundColor3, StopBtn.Text = BLACK, "Parar Auto Farm"
 StopBtn.TextColor3, StopBtn.Font, StopBtn.TextSize = WHITE, Enum.Font.GothamBold, 16
@@ -78,22 +78,28 @@ local function startFarm(speed, mode)
     local root = char:WaitForChild("HumanoidRootPart")
     stopAll()
     
+    -- FORÇA BRUTA AUMENTADA PARA 100 MILHÕES
     bv, bg = Instance.new("BodyVelocity", root), Instance.new("BodyGyro", root)
-    bv.MaxForce, bg.MaxTorque = Vector3.one * 1e7, Vector3.one * 1e7
+    bv.MaxForce, bg.MaxTorque = Vector3.one * 1e8, Vector3.one * 1e8
     flying = true
     
     task.spawn(function()
         while flying and root.Parent do
-            toggleNoclip(true)
+            toggleNoclip(true) -- ATRAVESSA ATÉ PENSAMENTO
             local z = root.Position.Z
-            local targetY = 35 -- Altura padrão
+            local targetY = 35 -- Altura de voo normal
             
-            -- LÓGICA DA CACHOEIRA (DESCER ATÉ OS ESPINHOS)
-            if mode == "Boat" and z >= 9410 and z < 9480 then
-                targetY = -25 -- Altura dos espinhos/rastro do tesouro
+            -- FORÇANDO A DESCIDA NA CACHOEIRA (Z > 9410)
+            if mode == "Boat" and z >= 9410 and z < 9485 then
+                targetY = -35 -- Vai mais fundo ainda para garantir
+                -- Se ele estiver muito alto, "puxa" ele pra baixo no CFrame
+                if root.Position.Y > -20 then
+                    root.CFrame = root.CFrame * CFrame.new(0, -5, 0)
+                end
             end
 
-            if z >= 9480 or (z >= 9410 and root.Velocity.Magnitude < 1) then
+            -- TRAVA NO TESOURO
+            if z >= 9485 or (z >= 9410 and root.Velocity.Magnitude < 1) then
                 bv.Velocity = Vector3.zero
                 StopBtn.Visible = true
             else
