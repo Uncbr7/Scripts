@@ -5,7 +5,9 @@ local ScreenGui = Instance.new("ScreenGui", game:GetService("CoreGui"))
 local MainFrame = Instance.new("Frame", ScreenGui)
 local Header = Instance.new("TextLabel", MainFrame)
 local ToggleBtn = Instance.new("TextButton", ScreenGui)
-local ActionBtn = Instance.new("TextButton", MainFrame)
+
+-- BOTÃO DE TELA (APARECE QUANDO CONGELA)
+local StopBtn = Instance.new("TextButton", ScreenGui)
 
 local RED = Color3.fromRGB(255, 0, 0)
 local BLACK = Color3.fromRGB(0, 0, 0)
@@ -18,8 +20,7 @@ local function applyNeon(p)
     s.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 end
 
--- Botão M
-ToggleBtn.Parent = ScreenGui
+-- Configuração do Botão M
 ToggleBtn.Size, ToggleBtn.Position = UDim2.new(0, 45, 0, 45), UDim2.new(0, 15, 0, 15)
 ToggleBtn.BackgroundColor3 = BLACK
 ToggleBtn.Text, ToggleBtn.TextColor3 = "M", WHITE
@@ -27,9 +28,8 @@ ToggleBtn.Font, ToggleBtn.TextSize = Enum.Font.GothamBold, 25
 Instance.new("UICorner", ToggleBtn)
 applyNeon(ToggleBtn)
 
--- Painel Principal
-MainFrame.Parent = ScreenGui
-MainFrame.Size, MainFrame.Position = UDim2.new(0, 260, 0, 320), UDim2.new(0.5, -130, 0.5, -160)
+-- Painel Principal MatsuHub
+MainFrame.Size, MainFrame.Position = UDim2.new(0, 260, 0, 250), UDim2.new(0.5, -130, 0.5, -125)
 MainFrame.BackgroundColor3, MainFrame.Visible = BLACK, true
 MainFrame.Active, MainFrame.Draggable = true, true
 Instance.new("UICorner", MainFrame)
@@ -40,6 +40,18 @@ Header.Parent = MainFrame
 Header.Size, Header.BackgroundTransparency = UDim2.new(1, 0, 0, 50), 1
 Header.Text, Header.TextColor3 = "MATSUHUB OFFICIAL", RED
 Header.Font, Header.TextSize = Enum.Font.GothamBold, 18
+
+-- Botão Parar Auto Farm ( GothamBold + Neon )
+StopBtn.Size = UDim2.new(0, 180, 0, 50)
+StopBtn.Position = UDim2.new(0.5, -90, 0.7, 0) -- Centralizado na parte inferior
+StopBtn.BackgroundColor3 = BLACK
+StopBtn.Text = "Parar Auto Farm"
+StopBtn.TextColor3 = WHITE
+StopBtn.Font = Enum.Font.GothamBold
+StopBtn.TextSize = 16
+StopBtn.Visible = false 
+Instance.new("UICorner", StopBtn)
+applyNeon(StopBtn)
 
 local function createBtn(t, p, f)
     local b = Instance.new("TextButton", MainFrame)
@@ -52,21 +64,10 @@ local function createBtn(t, p, f)
     b.MouseButton1Click:Connect(f)
 end
 
--- Botão de Ação Dinâmico (DESCER / PARAR)
-ActionBtn.Parent = MainFrame
-ActionBtn.Size, ActionBtn.Position = UDim2.new(0.9, 0, 0, 50), UDim2.new(0.05, 0, 0.8, 0)
-ActionBtn.BackgroundColor3 = Color3.fromRGB(30, 0, 0)
-ActionBtn.Text, ActionBtn.TextColor3 = "", WHITE
-ActionBtn.Font, ActionBtn.TextSize = Enum.Font.GothamBold, 14
-ActionBtn.Visible = false
-Instance.new("UICorner", ActionBtn)
-applyNeon(ActionBtn)
-
 ToggleBtn.MouseButton1Click:Connect(function() MainFrame.Visible = not MainFrame.Visible end)
 
 local lp = game.Players.LocalPlayer
 local flying, bv, bg = false, nil, nil
-local faseDescer = false
 
 local function toggleNoclip(state)
     local char = lp.Character
@@ -79,12 +80,13 @@ end
 
 local function stopAll()
     flying = false
-    faseDescer = false
     if bv then bv:Destroy(); bv = nil end
     if bg then bg:Destroy(); bg = nil end
-    ActionBtn.Visible = false
+    StopBtn.Visible = false
     toggleNoclip(false)
 end
+
+StopBtn.MouseButton1Click:Connect(stopAll)
 
 local function startFarm(speed)
     local char = lp.Character or lp.CharacterAdded:Wait()
@@ -100,22 +102,18 @@ local function startFarm(speed)
             toggleNoclip(true) 
             local z = root.Position.Z
             
-            -- PARADA 1: NA CACHOEIRA (PARA DESCER)
-            if z > 9410 and z < 9475 and not faseDescer then
-                bv.Velocity = Vector3.zero
-                ActionBtn.Text = "DESCER"
-                ActionBtn.Visible = true
-            
-            -- PARADA 2: NO BAÚ (PARA PARAR)
-            elseif z >= 9480 then
-                bv.Velocity = Vector3.zero
-                ActionBtn.Text = "PARAR DE VOAR"
-                ActionBtn.Visible = true
-            
-            -- VOO NORMAL
+            -- Lógica de Congelamento (Cachoeira ou Baú)
+            if z >= 9410 then -- A partir daqui ele começa a monitorar o "trava"
+                if z >= 9480 or (root.Velocity.Magnitude < 1) then
+                    bv.Velocity = Vector3.zero
+                    StopBtn.Visible = true -- SÓ APARECE QUANDO CONGELA
+                else
+                    bv.Velocity = (Vector3.new(-106, 35, z + 100) - root.Position).Unit * speed
+                    StopBtn.Visible = false
+                end
             else
                 bv.Velocity = (Vector3.new(-106, 35, z + 100) - root.Position).Unit * speed
-                ActionBtn.Visible = false
+                StopBtn.Visible = false
             end
             
             bg.CFrame = CFrame.new(root.Position, Vector3.new(-106, root.Position.Y, z + 100))
@@ -124,17 +122,6 @@ local function startFarm(speed)
     end)
 end
 
-ActionBtn.MouseButton1Click:Connect(function()
-    local root = lp.Character:FindFirstChild("HumanoidRootPart")
-    if ActionBtn.Text == "DESCER" then
-        if root then root.CFrame = root.CFrame * CFrame.new(0, -55, 0) end -- Te joga para baixo da parede
-        faseDescer = true
-        ActionBtn.Visible = false
-    else
-        stopAll()
-    end
-end)
-
-createBtn("AUTO FARM DE BARCO", UDim2.new(0.05, 0, 0.2, 0), function() startFarm(200) end)
-createBtn("AUTO FARM (NORMAL)", UDim2.new(0.05, 0, 0.4, 0), function() startFarm(250) end)
-createBtn("AUTO FARM (TURBO)", UDim2.new(0.05, 0, 0.6, 0), function() startFarm(400) end)
+createBtn("AUTO FARM DE BARCO", UDim2.new(0.05, 0, 0.25, 0), function() startFarm(200) end)
+createBtn("AUTO FARM (NORMAL)", UDim2.new(0.05, 0, 0.45, 0), function() startFarm(250) end)
+createBtn("AUTO FARM (TURBO)", UDim2.new(0.05, 0, 0.65, 0), function() startFarm(400) end)
