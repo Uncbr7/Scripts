@@ -14,17 +14,13 @@ local function applyNeon(p)
     s.Color, s.Thickness, s.ApplyStrokeMode = NEON_RED, 3, Enum.ApplyStrokeMode.Border
 end
 
--- Botão de Abrir/Fechar
 ToggleBtn.Size, ToggleBtn.Position, ToggleBtn.BackgroundColor3 = UDim2.new(0, 45, 0, 45), UDim2.new(0, 15, 0, 15), PRETO
 ToggleBtn.Text, ToggleBtn.TextColor3, ToggleBtn.Font, ToggleBtn.TextSize = "M", BRANCO, Enum.Font.GothamBold, 20
-Instance.new("UICorner", ToggleBtn)
-applyNeon(ToggleBtn)
+Instance.new("UICorner", ToggleBtn); applyNeon(ToggleBtn)
 
--- Painel Principal
 MainFrame.Size, MainFrame.Position, MainFrame.BackgroundColor3 = UDim2.new(0, 250, 0, 310), UDim2.new(0.5, -125, 0.5, -155), PRETO
 MainFrame.Active, MainFrame.Draggable = true, true
-Instance.new("UICorner", MainFrame)
-applyNeon(MainFrame)
+Instance.new("UICorner", MainFrame); applyNeon(MainFrame)
 
 Header.Size, Header.BackgroundColor3, Header.Text = UDim2.new(1, 0, 0, 50), PRETO, "MATSUHUB BUILD BOAT"
 Header.TextColor3, Header.Font, Header.TextSize = BRANCO, Enum.Font.GothamBold, 15
@@ -34,17 +30,14 @@ local function createBtn(t, p, f)
     local b = Instance.new("TextButton", MainFrame)
     b.Size, b.Position, b.BackgroundColor3 = UDim2.new(0.85, 0, 0, 40), p, Color3.fromRGB(15, 15, 15)
     b.Text, b.TextColor3, b.Font, b.TextSize = t, BRANCO, Enum.Font.GothamBold, 11
-    Instance.new("UICorner", b)
-    applyNeon(b)
+    Instance.new("UICorner", b); applyNeon(b)
     b.MouseButton1Click:Connect(f)
 end
 
--- Botão de Ação (Descer / Parar de Voar)
 ActionBtn.Size, ActionBtn.Position, ActionBtn.BackgroundColor3 = UDim2.new(0.85, 0, 0, 45), UDim2.new(0.075, 0, 0.78, 0), PRETO
 ActionBtn.Text, ActionBtn.TextColor3, ActionBtn.Font, ActionBtn.TextSize = "", BRANCO, Enum.Font.GothamBold, 12
 ActionBtn.Visible = false
-Instance.new("UICorner", ActionBtn)
-applyNeon(ActionBtn)
+Instance.new("UICorner", ActionBtn); applyNeon(ActionBtn)
 
 ToggleBtn.MouseButton1Click:Connect(function() MainFrame.Visible = not MainFrame.Visible end)
 
@@ -60,58 +53,60 @@ local function cleanup()
     ActionBtn.Visible = false
 end
 
--- FUNÇÃO MESTRE QUE CONTROLA O TRAVAMENTO EM TODOS OS MODOS
 local function startFly(s)
-    local h = lp.Character:FindFirstChild("HumanoidRootPart")
-    if not h then return end
+    local char = lp.Character or lp.CharacterAdded:Wait()
+    local h = char:WaitForChild("HumanoidRootPart")
     cleanup()
     
-    bv, bg = Instance.new("BodyVelocity", h), Instance.new("BodyGyro", h)
-    bv.MaxForce, bg.MaxTorque = Vector3.one * 1e6, Vector3.one * 1e6
+    bv = Instance.new("BodyVelocity", h)
+    bg = Instance.new("BodyGyro", h)
+    bv.MaxForce = Vector3.new(1e6, 1e6, 1e6)
+    bg.MaxTorque = Vector3.new(1e6, 1e6, 1e6)
     flying = true
     
     task.spawn(function()
         while flying and h.Parent do
             local posZ = h.Position.Z
-            
-            -- 1. TRAVA NA CACHOEIRA (QUALQUER VELOCIDADE)
+            -- CACHOEIRA (Trava e mostra DESCER)
             if posZ > 9410 and posZ < 9485 and not jaDesceu then
-                bv.Velocity = Vector3.new(0,0,0) -- Trava total
+                bv.Velocity = Vector3.zero
                 ActionBtn.Text = "DESCER"
-                ActionBtn.BackgroundColor3 = Color3.fromRGB(0, 120, 0)
+                ActionBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
                 ActionBtn.Visible = true
-            
-            -- 2. TRAVA NA AREIA (QUALQUER VELOCIDADE)
+            -- AREIA (Trava e mostra PARAR)
             elseif posZ >= 9485 then
-                bv.Velocity = Vector3.new(0,0,0) -- Trava total
+                bv.Velocity = Vector3.zero
                 ActionBtn.Text = "PARAR DE VOAR"
-                ActionBtn.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
+                ActionBtn.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
                 ActionBtn.Visible = true
-            
-            -- 3. MOVIMENTO NORMAL
             else
                 bv.Velocity = (Vector3.new(-106, 35, posZ + 100) - h.Position).Unit * s
                 ActionBtn.Visible = false
             end
-            
             bg.CFrame = CFrame.new(h.Position, Vector3.new(-106, h.Position.Y, h.Position.Z + 100))
             task.wait()
         end
     end)
 end
 
+-- CORREÇÃO DOS CLIQUES:
 ActionBtn.MouseButton1Click:Connect(function()
-    local h = lp.Character:FindFirstChild("HumanoidRootPart")
-    if ActionBtn.Text == "DESCER" and h then
-        h.CFrame = CFrame.new(-106, -17, h.Position.Z) -- Desce pros espinhos
-        task.wait(0.2)
-        jaDesceu = true 
+    local char = lp.Character
+    local h = char and char:FindFirstChild("HumanoidRootPart")
+    if not h then return end
+
+    if ActionBtn.Text == "DESCER" then
+        -- Teleporte agressivo para baixo
+        h.CFrame = CFrame.new(-106, -18, h.Position.Z)
+        jaDesceu = true
+        ActionBtn.Visible = false
     elseif ActionBtn.Text == "PARAR DE VOAR" then
         cleanup()
+        -- Garante que o boneco cai
+        h.Velocity = Vector3.zero
     end
 end)
 
--- AQUI O CÓDIGO FUNCIONA PARA TODOS OS TRÊS BOTÕES IGUALMENTE
 createBtn("AUTO FARM DE BARCO", UDim2.new(0.075, 0, 0.20, 0), function() startFly(200) end)
 createBtn("AUTO FARM (NORMAL)", UDim2.new(0.075, 0, 0.38, 0), function() startFly(250) end)
 createBtn("AUTO FARM (TURBO)", UDim2.new(0.075, 0, 0.56, 0), function() startFly(400) end)
