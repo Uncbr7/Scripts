@@ -1,4 +1,4 @@
--- [[ MATSUHUB BUILD BOAT - CLEAN VERSION ]] --
+-- [[ MATSUHUB BUILD BOAT - VERSÃO LIMPA ]] --
 if game.PlaceId ~= 537413528 then return end
 
 local ScreenGui = Instance.new("ScreenGui", game:GetService("CoreGui"))
@@ -17,25 +17,25 @@ local function applyNeon(p)
     s.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 end
 
--- Botão M (Menu)
+-- Botão M
 ToggleBtn.Size, ToggleBtn.Position = UDim2.new(0, 45, 0, 45), UDim2.new(0, 15, 0, 15)
 ToggleBtn.BackgroundColor3, ToggleBtn.Text = BLACK, "M"
 ToggleBtn.TextColor3, ToggleBtn.Font, ToggleBtn.TextSize = WHITE, Enum.Font.GothamBold, 25
 Instance.new("UICorner", ToggleBtn); applyNeon(ToggleBtn)
 
--- Painel Principal (Ajustado para 2 botões)
-MainFrame.Size, MainFrame.Position = UDim2.new(0, 260, 0, 200), UDim2.new(0.5, -130, 0.5, -100)
+-- Painel (Encurtado para 2 botões)
+MainFrame.Size, MainFrame.Position = UDim2.new(0, 260, 0, 190), UDim2.new(0.5, -130, 0.5, -95)
 MainFrame.BackgroundColor3, MainFrame.Visible = BLACK, true
 MainFrame.Active, MainFrame.Draggable = true, true
 Instance.new("UICorner", MainFrame); applyNeon(MainFrame)
 
--- Título
+-- Título Branco
 Header.Parent, Header.Size = MainFrame, UDim2.new(1, 0, 0, 50)
 Header.BackgroundTransparency, Header.Text = 1, "MATSUHUB BUILD BOAT"
 Header.TextColor3, Header.Font, Header.TextSize = WHITE, Enum.Font.GothamBold, 17
 
--- Botão Parar Auto Farm (Aparece ao travar)
-StopBtn.Size, StopBtn.Position = UDim2.new(0, 180, 0, 50), UDim2.new(0.5, -90, 0.7, 0)
+-- Botão Parar Auto Farm (Aparece no final)
+StopBtn.Size, StopBtn.Position = UDim2.new(0, 180, 0, 50), UDim2.new(0.5, -90, 0.75, 0)
 StopBtn.BackgroundColor3, StopBtn.Text = BLACK, "Parar Auto Farm"
 StopBtn.TextColor3, StopBtn.Font, StopBtn.TextSize = WHITE, Enum.Font.GothamBold, 16
 StopBtn.Visible = false; Instance.new("UICorner", StopBtn); applyNeon(StopBtn)
@@ -81,7 +81,7 @@ local function startFarm(speed)
         while flying and root.Parent do
             toggleNoclip(true)
             local currentPos = root.Position
-            local targetY = 35 -- Voo estável acima de obstáculos
+            local targetY = 35 
             
             if currentPos.Z >= 9485 then
                 root.CFrame = CFrame.new(-106, targetY, currentPos.Z)
@@ -95,6 +95,6 @@ local function startFarm(speed)
     end)
 end
 
--- Botões Remanescentes (Sem números nos nomes)
+-- APENAS OS DOIS QUE VOCÊ QUERIA
 createBtn("AUTO FARM (NORMAL)", UDim2.new(0.05, 0, 0.35, 0), function() startFarm(200) end)
 createBtn("AUTO FARM (TURBO)", UDim2.new(0.05, 0, 0.65, 0), function() startFarm(350) end)
