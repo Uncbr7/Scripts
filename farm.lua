@@ -14,12 +14,10 @@ local function applyNeon(p)
     s.Color, s.Thickness, s.ApplyStrokeMode = NEON_RED, 3, Enum.ApplyStrokeMode.Border
 end
 
--- Botão M (Menu)
 ToggleBtn.Size, ToggleBtn.Position, ToggleBtn.BackgroundColor3 = UDim2.new(0, 45, 0, 45), UDim2.new(0, 15, 0, 15), PRETO
 ToggleBtn.Text, ToggleBtn.TextColor3, ToggleBtn.Font, ToggleBtn.TextSize = "M", BRANCO, Enum.Font.GothamBold, 20
 Instance.new("UICorner", ToggleBtn); applyNeon(ToggleBtn)
 
--- Painel
 MainFrame.Size, MainFrame.Position, MainFrame.BackgroundColor3 = UDim2.new(0, 250, 0, 310), UDim2.new(0.5, -125, 0.5, -155), PRETO
 MainFrame.Active, MainFrame.Draggable = true, true
 Instance.new("UICorner", MainFrame); applyNeon(MainFrame)
@@ -45,14 +43,16 @@ ToggleBtn.MouseButton1Click:Connect(function() MainFrame.Visible = not MainFrame
 
 local lp = game.Players.LocalPlayer
 local flying, bv, bg = false, nil, nil
-local jaDesceu = false 
 
 local function cleanup()
     flying = false
-    jaDesceu = false
     if bv then bv:Destroy(); bv = nil end
     if bg then bg:Destroy(); bg = nil end
     ActionBtn.Visible = false
+    -- Restaura colisão ao parar
+    for _, v in pairs(lp.Character:GetDescendants()) do
+        if v:IsA("BasePart") then v.CanCollide = true end
+    end
 end
 
 local function startFly(s)
@@ -62,51 +62,42 @@ local function startFly(s)
     
     bv = Instance.new("BodyVelocity", h)
     bg = Instance.new("BodyGyro", h)
-    bv.MaxForce = Vector3.new(1e6, 1e6, 1e6)
-    bg.MaxTorque = Vector3.new(1e6, 1e6, 1e6)
+    bv.MaxForce = Vector3.one * 1e6
+    bg.MaxTorque = Vector3.one * 1e6
     flying = true
     
     task.spawn(function()
         while flying and h.Parent do
             local posZ = h.Position.Z
             
-            -- PARADA 1: LOGO APÓS A CACHOEIRA (Perto dos espinhos)
-            if posZ > 9420 and posZ < 9480 and not jaDesceu then
-                bv.Velocity = Vector3.new(0,0,0) -- Congela
-                ActionBtn.Text = "DESCER"
-                ActionBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
-                ActionBtn.Visible = true
+            -- ATRAVESSA PAREDE NA CACHOEIRA (Noclip Temporário)
+            if posZ > 9410 and posZ < 9485 then
+                for _, part in pairs(char:GetDescendants()) do
+                    if part:IsA("BasePart") then part.CanCollide = false end
+                end
+                bv.Velocity = (Vector3.new(-106, 35, posZ + 100) - h.Position).Unit * s
             
-            -- PARAR 2: CHEGANDO NA AREIA
+            -- CONGELA EM CIMA DO BAÚ
             elseif posZ >= 9485 then
-                bv.Velocity = Vector3.new(0,0,0) -- Congela
+                bv.Velocity = Vector3.zero
                 ActionBtn.Text = "PARAR DE VOAR"
                 ActionBtn.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
                 ActionBtn.Visible = true
-            
-            -- VOO NORMAL
+                for _, part in pairs(char:GetDescendants()) do
+                    if part:IsA("BasePart") then part.CanCollide = true end
+                end
             else
                 bv.Velocity = (Vector3.new(-106, 35, posZ + 100) - h.Position).Unit * s
                 ActionBtn.Visible = false
             end
+            
             bg.CFrame = CFrame.new(h.Position, Vector3.new(-106, h.Position.Y, h.Position.Z + 100))
             task.wait()
         end
     end)
 end
 
-ActionBtn.MouseButton1Click:Connect(function()
-    local h = lp.Character:FindFirstChild("HumanoidRootPart")
-    if not h then return end
-
-    if ActionBtn.Text == "DESCER" then
-        h.CFrame = CFrame.new(-106, -18, h.Position.Z) -- Teleporte para o espinho
-        jaDesceu = true
-        ActionBtn.Visible = false
-    elseif ActionBtn.Text == "PARAR DE VOAR" then
-        cleanup()
-    end
-end)
+ActionBtn.MouseButton1Click:Connect(cleanup)
 
 createBtn("AUTO FARM DE BARCO", UDim2.new(0.075, 0, 0.20, 0), function() startFly(200) end)
 createBtn("AUTO FARM (NORMAL)", UDim2.new(0.075, 0, 0.38, 0), function() startFly(250) end)
