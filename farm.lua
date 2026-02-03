@@ -1,4 +1,4 @@
--- [[ MatsuHub Oficial ]] --
+-- [[ MatsuHub Oficial - Build A Boat ]] --
 if game.PlaceId ~= 537413528 then 
     return 
 end
@@ -19,7 +19,7 @@ local function applyNeon(p)
     s.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 end
 
--- Botão Flutuante (M)
+-- Botão de Abrir/Fechar (M)
 ToggleBtn.Size = UDim2.new(0, 45, 0, 45)
 ToggleBtn.Position = UDim2.new(0, 15, 0, 15)
 ToggleBtn.BackgroundColor3 = PRETO
@@ -30,7 +30,7 @@ ToggleBtn.TextSize = 20
 Instance.new("UICorner", ToggleBtn)
 applyNeon(ToggleBtn)
 
--- Painel
+-- Painel Principal MatsuHub
 MainFrame.Size = UDim2.new(0, 250, 0, 270)
 MainFrame.Position = UDim2.new(0.5, -125, 0.5, -135)
 MainFrame.BackgroundColor3 = PRETO
@@ -39,7 +39,7 @@ MainFrame.Draggable = true
 Instance.new("UICorner", MainFrame)
 applyNeon(MainFrame)
 
--- Título MatsuHub
+-- Título (Letras Brancas)
 Header.Size = UDim2.new(1, 0, 0, 50)
 Header.BackgroundColor3 = PRETO
 Header.Text = "MATSUHUB BUILD BOAT"
@@ -103,6 +103,6 @@ local function startFly(s)
     end)
 end
 
-createBtn("AUTO FARM DE BARCO", UDim2.new(0.075, 0, 0.25, 0), function() startFly(200) end)
-createBtn("AUTO FARM (NORMAL)", UDim2.new(0.075, 0, 0.48, 0), function() startFly(250) end)
-createBtn("AUTO FARM (TURBO)", UDim2.new(0.075, 0, 0.71, 0), function() startFly(400) end)
+createBtn("AUTO FARM MATSU (200)", UDim2.new(0.075, 0, 0.25, 0), function() startFly(200) end)
+createBtn("AUTO FARM MATSU (250)", UDim2.new(0.075, 0, 0.48, 0), function() startFly(250) end)
+createBtn("AUTO FARM MATSU (400)", UDim2.new(0.075, 0, 0.71, 0), function() startFly(400) end)
