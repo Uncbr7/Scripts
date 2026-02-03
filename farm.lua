@@ -30,7 +30,7 @@ ToggleBtn.TextSize = 20
 Instance.new("UICorner", ToggleBtn)
 applyNeon(ToggleBtn)
 
--- Painel Principal MatsuHub
+-- Painel Principal
 MainFrame.Size = UDim2.new(0, 250, 0, 270)
 MainFrame.Position = UDim2.new(0.5, -125, 0.5, -135)
 MainFrame.BackgroundColor3 = PRETO
@@ -39,7 +39,7 @@ MainFrame.Draggable = true
 Instance.new("UICorner", MainFrame)
 applyNeon(MainFrame)
 
--- Título (Letras Brancas)
+-- Título
 Header.Size = UDim2.new(1, 0, 0, 50)
 Header.BackgroundColor3 = PRETO
 Header.Text = "MATSUHUB BUILD BOAT"
@@ -103,6 +103,7 @@ local function startFly(s)
     end)
 end
 
-createBtn("AUTO FARM MATSU (200)", UDim2.new(0.075, 0, 0.25, 0), function() startFly(200) end)
-createBtn("AUTO FARM MATSU (250)", UDim2.new(0.075, 0, 0.48, 0), function() startFly(250) end)
-createBtn("AUTO FARM MATSU (400)", UDim2.new(0.075, 0, 0.71, 0), function() startFly(400) end)
+-- NOMES DOS BOTÕES ATUALIZADOS AQUI:
+createBtn("AUTOFARM DE BARCO", UDim2.new(0.075, 0, 0.25, 0), function() startFly(200) end)
+createBtn("AUTOFARM(NORMAL)", UDim2.new(0.075, 0, 0.48, 0), function() startFly(250) end)
+createBtn("AUTOFARM(TURBO)", UDim2.new(0.075, 0, 0.71, 0), function() startFly(400) end)
