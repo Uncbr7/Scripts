@@ -34,8 +34,8 @@ local function createBtn(t, p, f)
     b.MouseButton1Click:Connect(f)
 end
 
-ActionBtn.Size, ActionBtn.Position, ActionBtn.BackgroundColor3 = UDim2.new(0.85, 0, 0, 45), UDim2.new(0.075, 0, 0.78, 0), PRETO
-ActionBtn.Text, ActionBtn.TextColor3, ActionBtn.Font, ActionBtn.TextSize = "", BRANCO, Enum.Font.GothamBold, 12
+ActionBtn.Size, ActionBtn.Position, ActionBtn.BackgroundColor3 = UDim2.new(0.85, 0, 0, 45), UDim2.new(0.075, 0, 0.78, 0), Color3.fromRGB(150, 0, 0)
+ActionBtn.Text, ActionBtn.TextColor3, ActionBtn.Font, ActionBtn.TextSize = "PARAR DE VOAR", BRANCO, Enum.Font.GothamBold, 12
 ActionBtn.Visible = false
 Instance.new("UICorner", ActionBtn); applyNeon(ActionBtn)
 
@@ -49,9 +49,10 @@ local function cleanup()
     if bv then bv:Destroy(); bv = nil end
     if bg then bg:Destroy(); bg = nil end
     ActionBtn.Visible = false
-    -- Restaura colisão ao parar
-    for _, v in pairs(lp.Character:GetDescendants()) do
-        if v:IsA("BasePart") then v.CanCollide = true end
+    if lp.Character then
+        for _, v in pairs(lp.Character:GetDescendants()) do
+            if v:IsA("BasePart") then v.CanCollide = true end
+        end
     end
 end
 
@@ -60,28 +61,24 @@ local function startFly(s)
     local h = char:WaitForChild("HumanoidRootPart")
     cleanup()
     
-    bv = Instance.new("BodyVelocity", h)
-    bg = Instance.new("BodyGyro", h)
-    bv.MaxForce = Vector3.one * 1e6
-    bg.MaxTorque = Vector3.one * 1e6
+    bv, bg = Instance.new("BodyVelocity", h), Instance.new("BodyGyro", h)
+    bv.MaxForce, bg.MaxTorque = Vector3.one * 1e6, Vector3.one * 1e6
     flying = true
     
     task.spawn(function()
         while flying and h.Parent do
             local posZ = h.Position.Z
             
-            -- ATRAVESSA PAREDE NA CACHOEIRA (Noclip Temporário)
-            if posZ > 9410 and posZ < 9485 then
+            -- ATRAVESSA A PAREDE DA FOTO (Noclip Ativo)
+            if posZ > 9400 and posZ < 9485 then
                 for _, part in pairs(char:GetDescendants()) do
                     if part:IsA("BasePart") then part.CanCollide = false end
                 end
-                bv.Velocity = (Vector3.new(-106, 35, posZ + 100) - h.Position).Unit * s
-            
+            end
+
             -- CONGELA EM CIMA DO BAÚ
-            elseif posZ >= 9485 then
-                bv.Velocity = Vector3.zero
-                ActionBtn.Text = "PARAR DE VOAR"
-                ActionBtn.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+            if posZ >= 9485 then
+                bv.Velocity = Vector3.new(0,0,0)
                 ActionBtn.Visible = true
                 for _, part in pairs(char:GetDescendants()) do
                     if part:IsA("BasePart") then part.CanCollide = true end
