@@ -18,7 +18,7 @@ local MainFrame = Instance.new("Frame", sgui)
 MainFrame.Size = UDim2.new(0, 280, 0, 180)
 MainFrame.Position = UDim2.new(0.5, -140, 0.5, -90)
 MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
-MainFrame.Visible = true -- Começa aberto
+MainFrame.Visible = true 
 
 local stroke = Instance.new("UIStroke", MainFrame)
 stroke.Color = Color3.fromRGB(0, 85, 255)
@@ -33,25 +33,25 @@ Title.Font = Enum.Font.GothamBold
 Title.TextSize = 20
 Title.BackgroundTransparency = 1
 
--- 3. BOTÃO VIP (ATRAVESSAR SEM SUMIR)
+-- 3. BOTÃO VIP (ALTERADO PARA "Vip Grátis")
 local VipBtn = Instance.new("TextButton", MainFrame)
 VipBtn.Size = UDim2.new(0.9, 0, 0, 60)
 VipBtn.Position = UDim2.new(0.05, 0, 0.45, 0)
 VipBtn.BackgroundColor3 = Color3.fromRGB(255, 215, 0)
-VipBtn.Text = "ATIVAR ATRAVESSAR VIP"
+VipBtn.Text = "Vip Grátis"
 VipBtn.TextColor3 = Color3.new(0, 0, 0)
 VipBtn.Font = Enum.Font.GothamBold
-VipBtn.TextSize = 15
+VipBtn.TextSize = 18
 Instance.new("UICorner", VipBtn)
 
 VipBtn.MouseButton1Click:Connect(function()
-    VipBtn.Text = "VIP ATIVADO! 👑"
+    VipBtn.Text = "Vip Liberado!" -- Texto alterado conforme pedido
     pcall(function()
-        -- Torna as paredes VIP atravessáveis, mas não deleta
+        -- Atravessa as paredes sem sumir com elas
         for _, v in pairs(workspace:GetDescendants()) do
             if v.Name:lower():find("vip") and v:IsA("BasePart") then
                 v.CanCollide = false
-                v.Transparency = 0.5 -- Opcional: só pra você saber qual parede é
+                v.Transparency = 0.5
             end
         end
     end)
