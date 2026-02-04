@@ -1,13 +1,14 @@
--- [[ MATSUHUB TSUNAMI - TRADE SCAM FINAL ]] --
+-- [[ MATSUHUB TSUNAMI - VIP ONLY ]] --
 local player = game.Players.LocalPlayer
 local sgui = Instance.new("ScreenGui", game:GetService("CoreGui"))
-sgui.Name = "MatsuHubV4"
+sgui.Name = "MatsuHubVIP"
 
 local BLUE = Color3.fromRGB(0, 85, 255)
 local BLACK = Color3.fromRGB(15, 15, 15)
+local GOLD = Color3.fromRGB(255, 215, 0)
 local WHITE = Color3.fromRGB(255, 255, 255)
 
--- Botão M (Toggle)
+-- Botão M (Para esconder o menu)
 local ToggleBtn = Instance.new("TextButton", sgui)
 ToggleBtn.Size = UDim2.new(0, 45, 0, 45)
 ToggleBtn.Position = UDim2.new(0, 10, 0, 150)
@@ -18,10 +19,10 @@ ToggleBtn.Font = Enum.Font.GothamBold
 ToggleBtn.TextSize = 25
 Instance.new("UICorner", ToggleBtn)
 
--- Painel Principal (Menu Preto com Borda Azul)
+-- Painel Principal
 local MainFrame = Instance.new("Frame", sgui)
-MainFrame.Size = UDim2.new(0, 280, 0, 250)
-MainFrame.Position = UDim2.new(0.5, -140, 0.5, -125)
+MainFrame.Size = UDim2.new(0, 280, 0, 180)
+MainFrame.Position = UDim2.new(0.5, -140, 0.5, -90)
 MainFrame.BackgroundColor3 = BLACK
 local stroke = Instance.new("UIStroke", MainFrame)
 stroke.Color = BLUE
@@ -30,60 +31,43 @@ Instance.new("UICorner", MainFrame)
 
 local Title = Instance.new("TextLabel", MainFrame)
 Title.Size = UDim2.new(1, 0, 0, 50)
-Title.Text = "MatsuHub Trade Scam"
+Title.Text = "MatsuHub VIP"
 Title.TextColor3 = WHITE
 Title.Font = Enum.Font.GothamBold
-Title.TextSize = 18
+Title.TextSize = 20
 Title.BackgroundTransparency = 1
 
-local function createBtn(t, pos, color, f)
+-- Função para criar o botão de VIP
+local function createVipBtn(t, pos, color, f)
     local b = Instance.new("TextButton", MainFrame)
-    b.Size, b.Position = UDim2.new(0.9, 0, 0, 50), pos
+    b.Size, b.Position = UDim2.new(0.9, 0, 0, 60), pos
     b.BackgroundColor3, b.Text = color, t
-    b.TextColor3, b.Font, b.TextSize = WHITE, Enum.Font.GothamBold, 14
+    b.TextColor3, b.Font, b.TextSize = WHITE, Enum.Font.GothamBold, 16
     Instance.new("UICorner", b)
     b.MouseButton1Click:Connect(function() f(b) end)
 end
 
--- 1. CONGELAR TRADE
-createBtn("Congelar Trade", UDim2.new(0.05, 0, 0.25, 0), Color3.fromRGB(180, 0, 0), function(b)
-    _G.Freeze = not _G.Freeze
-    b.Text = _G.Freeze and "CONGELADO! ❄️" or "Congelar Trade"
-    task.spawn(function()
-        while _G.Freeze do
-            pcall(function()
-                -- Envia spam para o servidor ignorar o comando de cancelar do oponente
-                local rs = game:GetService("ReplicatedStorage")
-                for _, v in pairs(rs:GetDescendants()) do
-                    if v:IsA("RemoteEvent") and (v.Name:find("Trade") or v.Name:find("Accept")) then
-                        v:FireServer(true)
-                    end
-                end
-            end)
-            task.wait(0.01)
+-- BOTAO LIBERAR VIP
+createVipBtn("ATIVAR VIP UNLOCKED", UDim2.new(0.05, 0, 0.4, 0), GOLD, function(b)
+    b.Text = "VIP ATIVO! 👑"
+    pcall(function()
+        -- Bypass de permissões VIP
+        if player:FindFirstChild("IsVip") then player.IsVip.Value = true end
+        if player:FindFirstChild("VipPass") then player.VipPass.Value = true end
+        
+        -- Remove barreiras VIP do mapa
+        for _, v in pairs(workspace:GetDescendants()) do
+            if v.Name:lower():find("vip") and v:IsA("BasePart") then
+                v.CanCollide = false
+                v.Transparency = 0.5
+            end
         end
     end)
+    task.wait(2)
+    b.Text = "VIP UNLOCKED ✅"
 end)
 
--- 2. AUTO ACCEPT
-createBtn("Auto Accept", UDim2.new(0.05, 0, 0.6, 0), Color3.fromRGB(0, 160, 0), function(b)
-    _G.AutoAcc = not _G.AutoAcc
-    b.Text = _G.AutoAcc and "ACCEPT: ON ✅" or "Auto Accept"
-    task.spawn(function()
-        while _G.AutoAcc do
-            pcall(function()
-                for _, v in pairs(player.PlayerGui:GetDescendants()) do
-                    if v:IsA("TextButton") and (v.Text:lower():find("accept") or v.Text:lower():find("confirm")) then
-                        firesignal(v.MouseButton1Click)
-                    end
-                end
-            end)
-            task.wait(0.05)
-        end
-    end)
-end)
-
--- Fechar/Abrir
+-- Abrir e Fechar o menu
 ToggleBtn.MouseButton1Click:Connect(function()
     MainFrame.Visible = not MainFrame.Visible
 end)
