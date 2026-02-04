@@ -1,7 +1,7 @@
--- [[ MATSUHUB TSUNAMI - APENAS VIP ]] --
+-- [[ MATSUHUB TSUNAMI - DUPLICAR BRAINROT EDITION ]] --
 local player = game.Players.LocalPlayer
 local sgui = Instance.new("ScreenGui", game:GetService("CoreGui"))
-sgui.Name = "MatsuHubVipOnly"
+sgui.Name = "MatsuHubFinal"
 
 local MainFrame = Instance.new("Frame", sgui)
 local Header = Instance.new("TextLabel", MainFrame)
@@ -23,8 +23,8 @@ ToggleBtn.TextColor3, ToggleBtn.Font, ToggleBtn.TextSize = WHITE, Enum.Font.Goth
 ToggleBtn.ZIndex = 100
 Instance.new("UICorner", ToggleBtn); applyNeon(ToggleBtn)
 
--- Painel Principal Azul
-MainFrame.Size, MainFrame.Position = UDim2.new(0, 260, 0, 130), UDim2.new(0.5, -130, 0.5, -65)
+-- Painel Principal (Aumentei um pouco para caber o novo botão)
+MainFrame.Size, MainFrame.Position = UDim2.new(0, 260, 0, 200), UDim2.new(0.5, -130, 0.5, -100)
 MainFrame.BackgroundColor3 = BLUE
 MainFrame.Visible = true
 MainFrame.ZIndex = 5
@@ -37,16 +37,19 @@ Header.Text = "MatsuHub Tsunami"
 Header.TextColor3, Header.Font, Header.TextSize = WHITE, Enum.Font.GothamBold, 18
 Header.ZIndex = 6
 
--- Botão Liberar Vips
-local VipBtn = Instance.new("TextButton", MainFrame)
-VipBtn.Size, VipBtn.Position = UDim2.new(0.9, 0, 0, 50), UDim2.new(0.05, 0, 0.45, 0)
-VipBtn.BackgroundColor3, VipBtn.Text = DARK_BLUE, "Liberar Vips"
-VipBtn.TextColor3, VipBtn.Font, VipBtn.TextSize = WHITE, Enum.Font.GothamBold, 15
-VipBtn.ZIndex = 7
-Instance.new("UICorner", VipBtn); applyNeon(VipBtn)
+local function createBtn(t, pos, f)
+    local b = Instance.new("TextButton", MainFrame)
+    b.Size, b.Position = UDim2.new(0.9, 0, 0, 45), pos
+    b.BackgroundColor3, b.Text = DARK_BLUE, t
+    b.TextColor3, b.Font, b.TextSize = WHITE, Enum.Font.GothamBold, 14
+    b.ZIndex = 7
+    Instance.new("UICorner", b); applyNeon(b)
+    b.MouseButton1Click:Connect(function() f(b) end)
+end
 
-VipBtn.MouseButton1Click:Connect(function()
-    VipBtn.Text = "VIP LIBERADO!"
+-- 1. BOTÃO LIBERAR VIPS
+createBtn("Liberar Vips", UDim2.new(0.05, 0, 0.3, 0), function(b)
+    b.Text = "VIP ATIVADO"
     task.spawn(function()
         while true do
             for _, v in pairs(workspace:GetDescendants()) do
@@ -57,6 +60,27 @@ VipBtn.MouseButton1Click:Connect(function()
             task.wait(3)
         end
     end)
+end)
+
+-- 2. BOTÃO DUPLICAR BRAINROT (Novo!)
+createBtn("Duplicar Brainrot", UDim2.new(0.05, 0, 0.6, 0), function(b)
+    local char = player.Character
+    local backpack = player:FindFirstChild("Backpack")
+    
+    -- Procura o item na mão (Character)
+    local item = char:FindFirstChild("Brainrot") or char:FindFirstChildOfClass("Tool")
+    
+    if item and (item.Name:lower():find("brainrot") or item:IsA("Tool")) then
+        local clone = item:Clone()
+        clone.Parent = backpack
+        b.Text = "DUPLICADO!"
+        task.wait(1)
+        b.Text = "Duplicar Brainrot"
+    else
+        b.Text = "SEGURE O ITEM!"
+        task.wait(1)
+        b.Text = "Duplicar Brainrot"
+    end
 end)
 
 ToggleBtn.MouseButton1Click:Connect(function() MainFrame.Visible = not MainFrame.Visible end)
