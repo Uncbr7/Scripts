@@ -19,7 +19,7 @@ ToggleBtn.TextColor3, ToggleBtn.Font, ToggleBtn.TextSize = WHITE, Enum.Font.Goth
 ToggleBtn.ZIndex = 10; Instance.new("UICorner", ToggleBtn); applyNeon(ToggleBtn)
 
 -- Painel
-MainFrame.Size, MainFrame.Position = UDim2.new(0, 260, 0, 200), UDim2.new(0.5, -130, 0.5, -100)
+MainFrame.Size, MainFrame.Position = UDim2.new(0, 260, 0, 190), UDim2.new(0.5, -130, 0.5, -95)
 MainFrame.BackgroundColor3, MainFrame.Visible = BLACK, true
 Instance.new("UICorner", MainFrame); applyNeon(MainFrame)
 
@@ -39,8 +39,8 @@ end
 
 ToggleBtn.MouseButton1Click:Connect(function() MainFrame.Visible = not MainFrame.Visible end)
 
--- BOTÃO LIBERAR VIPS
-createBtn("Liberar Vips", UDim2.new(0.05, 0, 0.3, 0), function(b)
+-- Botão VIP
+createBtn("Liberar Vips", UDim2.new(0.05, 0, 0.35, 0), function(b)
     b.Text, b.TextColor3 = "LIBERADO!", RED
     task.spawn(function()
         while true do
@@ -54,27 +54,30 @@ createBtn("Liberar Vips", UDim2.new(0.05, 0, 0.3, 0), function(b)
     end)
 end)
 
--- BOTÃO VÁ MAIS UM (Teleporte por buracos)
-createBtn("Vá mais um", UDim2.new(0.05, 0, 0.6, 0), function(b)
+-- Botão VÁ MAIS UM (Teleporte por buracos)
+createBtn("Vá mais um", UDim2.new(0.05, 0, 0.65, 0), function(b)
     b.Text, b.TextColor3 = "ATIVO!", RED
     
     task.spawn(function()
-        local points = {}
-        -- Busca os buracos/checkpoints no mapa
+        -- Procura os pontos de vitória ou partes numeradas
+        local targetParts = {}
         for _, v in pairs(workspace:GetDescendants()) do
-            if v:IsA("BasePart") and (v.Name:find("Win") or v.Name:find("Part") or v:FindFirstChild("TouchTransmitter")) then
-                table.insert(points, v)
+            if v:IsA("BasePart") and (v.Name:find("Win") or v.Name:find("End") or v.Name:find("Goal")) then
+                table.insert(targetParts, v)
+            end
+        end
+
+        -- Se achar partes, vai pra elas, senão tenta os checkpoints
+        if #targetParts > 0 then
+            for _, part in pairs(targetParts) do
+                if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                    player.Character.HumanoidRootPart.CFrame = part.CFrame + Vector3.new(0, 3, 0)
+                    task.wait(0.3)
+                end
             end
         end
         
-        -- Teleporta um por um
-        for i, point in ipairs(points) do
-            if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                player.Character.HumanoidRootPart.CFrame = point.CFrame + Vector3.new(0, 3, 0)
-                task.wait(0.5) -- Tempo para o jogo registrar que você passou
-            end
-        end
-        b.Text = "Vá mais um"
-        b.TextColor3 = WHITE
+        task.wait(1)
+        b.Text, b.TextColor3 = "Vá mais um", WHITE
     end)
 end)
