@@ -1,42 +1,52 @@
--- [[ MATSUHUB TSUNAMI - NO-FRAME EDITION ]] --
+-- [[ MATSUHUB TSUNAMI - APENAS VIP ]] --
 local player = game.Players.LocalPlayer
 local sgui = Instance.new("ScreenGui", game:GetService("CoreGui"))
-sgui.Name = "MatsuHubNoFrame"
+sgui.Name = "MatsuHubVipOnly"
 
--- Botão M (Para fechar/abrir os botões)
+local MainFrame = Instance.new("Frame", sgui)
+local Header = Instance.new("TextLabel", MainFrame)
 local ToggleBtn = Instance.new("TextButton", sgui)
-ToggleBtn.Size, ToggleBtn.Position = UDim2.new(0, 45, 0, 45), UDim2.new(0, 15, 0, 60)
-ToggleBtn.BackgroundColor3, ToggleBtn.Text = Color3.fromRGB(0, 85, 255), "M"
-ToggleBtn.TextColor3, ToggleBtn.Font, ToggleBtn.TextSize = Color3.fromRGB(255, 255, 255), Enum.Font.GothamBold, 25
-Instance.new("UICorner", ToggleBtn)
 
--- Container Invisível
-local Holder = Instance.new("Frame", sgui)
-Holder.Size, Holder.Position = UDim2.new(0, 260, 0, 150), UDim2.new(0.5, -130, 0.5, -75)
-Holder.BackgroundTransparency = 1 -- TOTALMENTE INVISÍVEL
-Holder.Visible = true
+local BLUE = Color3.fromRGB(0, 85, 255)
+local DARK_BLUE = Color3.fromRGB(0, 40, 120)
+local WHITE = Color3.fromRGB(255, 255, 255)
 
-local function createBtn(t, pos, f)
-    local b = Instance.new("TextButton", Holder)
-    b.Size, b.Position = UDim2.new(0.9, 0, 0, 50), pos
-    b.BackgroundColor3 = Color3.fromRGB(0, 85, 255)
-    b.Text, b.TextColor3 = t, Color3.fromRGB(255, 255, 255)
-    b.Font, b.TextSize = Enum.Font.GothamBold, 16
-    Instance.new("UICorner", b)
-    local s = Instance.new("UIStroke", b)
-    s.Color, s.Thickness = Color3.fromRGB(255, 255, 255), 2
-    b.MouseButton1Click:Connect(function() f(b) end)
+local function applyNeon(p)
+    local s = Instance.new("UIStroke", p)
+    s.Color, s.Thickness, s.ApplyStrokeMode = WHITE, 2, Enum.ApplyStrokeMode.Border
 end
 
--- Título Flutuante
-local Title = Instance.new("TextLabel", Holder)
-Title.Size, Title.Position = UDim2.new(1, 0, 0, 40), UDim2.new(0, 0, -0.3, 0)
-Title.BackgroundTransparency, Title.Text = 1, "MATSUHUB TSUNAMI"
-Title.TextColor3, Title.Font, Title.TextSize = Color3.fromRGB(0, 85, 255), Enum.Font.GothamBold, 20
+-- Botão M
+ToggleBtn.Size, ToggleBtn.Position = UDim2.new(0, 45, 0, 45), UDim2.new(0, 15, 0, 60)
+ToggleBtn.BackgroundColor3, ToggleBtn.Text = BLUE, "M"
+ToggleBtn.TextColor3, ToggleBtn.Font, ToggleBtn.TextSize = WHITE, Enum.Font.GothamBold, 25
+ToggleBtn.ZIndex = 100
+Instance.new("UICorner", ToggleBtn); applyNeon(ToggleBtn)
 
--- Funções
-createBtn("Liberar Vips", UDim2.new(0.05, 0, 0.1, 0), function(b)
-    b.Text = "VIP ATIVO"
+-- Painel Principal Azul
+MainFrame.Size, MainFrame.Position = UDim2.new(0, 260, 0, 130), UDim2.new(0.5, -130, 0.5, -65)
+MainFrame.BackgroundColor3 = BLUE
+MainFrame.Visible = true
+MainFrame.ZIndex = 5
+Instance.new("UICorner", MainFrame); applyNeon(MainFrame)
+
+-- Título
+Header.Parent, Header.Size = MainFrame, UDim2.new(1, 0, 0, 50)
+Header.BackgroundTransparency = 1
+Header.Text = "MatsuHub Tsunami"
+Header.TextColor3, Header.Font, Header.TextSize = WHITE, Enum.Font.GothamBold, 18
+Header.ZIndex = 6
+
+-- Botão Liberar Vips
+local VipBtn = Instance.new("TextButton", MainFrame)
+VipBtn.Size, VipBtn.Position = UDim2.new(0.9, 0, 0, 50), UDim2.new(0.05, 0, 0.45, 0)
+VipBtn.BackgroundColor3, VipBtn.Text = DARK_BLUE, "Liberar Vips"
+VipBtn.TextColor3, VipBtn.Font, VipBtn.TextSize = WHITE, Enum.Font.GothamBold, 15
+VipBtn.ZIndex = 7
+Instance.new("UICorner", VipBtn); applyNeon(VipBtn)
+
+VipBtn.MouseButton1Click:Connect(function()
+    VipBtn.Text = "VIP LIBERADO!"
     task.spawn(function()
         while true do
             for _, v in pairs(workspace:GetDescendants()) do
@@ -49,22 +59,4 @@ createBtn("Liberar Vips", UDim2.new(0.05, 0, 0.1, 0), function(b)
     end)
 end)
 
-createBtn("Auto Lucky", UDim2.new(0.05, 0, 0.6, 0), function(b)
-    b.Text = "LUCKY ATIVO"
-    task.spawn(function()
-        while true do
-            for _, v in pairs(workspace:GetDescendants()) do
-                if v:IsA("ClickDetector") or v:IsA("ProximityPrompt") then
-                    local n = v.Parent.Name:lower()
-                    if n:find("lucky") or n:find("sorte") or n:find("machine") then
-                        if v:IsA("ClickDetector") then fireclickdetector(v)
-                        else fireproximityprompt(v) end
-                    end
-                end
-            end
-            task.wait(0.1)
-        end
-    end)
-end)
-
-ToggleBtn.MouseButton1Click:Connect(function() Holder.Visible = not Holder.Visible end)
+ToggleBtn.MouseButton1Click:Connect(function() MainFrame.Visible = not MainFrame.Visible end)
