@@ -1,10 +1,10 @@
--- [[ MATSUHUB TSUNAMI - BRAINROT FLY V3 ]] --
+-- [[ MATSUHUB BRAINROT - VERSÃO BLINDADA & TURBO ]] --
 local player = game.Players.LocalPlayer
-local character = player.Character or player.CharacterAdded:Wait()
+local runService = game:GetService("RunService")
+local ts = game:GetService("TweenService")
 
--- Interface
 local sgui = Instance.new("ScreenGui", game:GetService("CoreGui"))
-sgui.Name = "MatsuHubBrainrotV3"
+sgui.Name = "MatsuHubV3"
 
 local BLUE = Color3.fromRGB(0, 85, 255)
 local DARK_BLUE = Color3.fromRGB(0, 40, 120)
@@ -12,28 +12,21 @@ local WHITE = Color3.fromRGB(255, 255, 255)
 
 -- Botão de Abrir/Fechar (M)
 local ToggleBtn = Instance.new("TextButton", sgui)
-ToggleBtn.Size = UDim2.new(0, 40, 0, 40)
-ToggleBtn.Position = UDim2.new(0, 15, 0, 15)
+ToggleBtn.Size = UDim2.new(0, 45, 0, 45)
+ToggleBtn.Position = UDim2.new(0, 10, 0, 150) -- Posição ajustada para não atrapalhar
 ToggleBtn.BackgroundColor3 = BLUE
 ToggleBtn.Text = "M"
 ToggleBtn.TextColor3 = WHITE
 ToggleBtn.Font = Enum.Font.GothamBold
-ToggleBtn.TextSize = 22
+ToggleBtn.TextSize = 25
 Instance.new("UICorner", ToggleBtn)
 
--- Painel Principal
 local MainFrame = Instance.new("Frame", sgui)
-MainFrame.Size = UDim2.new(0, 260, 0, 260)
-MainFrame.Position = UDim2.new(0.5, -130, 0.5, -130)
+MainFrame.Size = UDim2.new(0, 260, 0, 280)
+MainFrame.Position = UDim2.new(0.5, -130, 0.5, -140)
 MainFrame.BackgroundColor3 = BLUE
 MainFrame.Visible = true
 Instance.new("UICorner", MainFrame)
-
-local Header = Instance.new("TextLabel", MainFrame)
-Header.Size = UDim2.new(1, 0, 0, 50)
-Header.BackgroundTransparency = 1
-Header.Text = "MatsuHub Brainrot"
-Header.TextColor3, Header.Font, Header.TextSize = WHITE, Enum.Font.GothamBold, 18
 
 local function createBtn(t, pos, f)
     local b = Instance.new("TextButton", MainFrame)
@@ -44,64 +37,68 @@ local function createBtn(t, pos, f)
     b.MouseButton1Click:Connect(function() f(b) end)
 end
 
--- Variável da Base
 local SavedPos = nil
 
--- 1. SALVAR LOCALIZAÇÃO
-createBtn("Salvar Base", UDim2.new(0.05, 0, 0.22, 0), function(b)
+-- 1. SALVAR BASE
+createBtn("Salvar Base (Local Seguro)", UDim2.new(0.05, 0, 0.2, 0), function(b)
     if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
         SavedPos = player.Character.HumanoidRootPart.Position
         b.Text = "BASE SALVA! ✅"
         task.wait(1)
-        b.Text = "Salvar Base"
+        b.Text = "Salvar Base (Local Seguro)"
     end
 end)
 
--- 2. VOAR PARA BASE (Suave)
-createBtn("Voar para Base", UDim2.new(0.05, 0, 0.45, 0), function(b)
+-- 2. VOO TURBO BLINDADO
+createBtn("Voo Blindado para Base", UDim2.new(0.05, 0, 0.45, 0), function(b)
     if SavedPos and player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
         local hrp = player.Character.HumanoidRootPart
-        b.Text = "VOANDO..."
+        local hum = player.Character:FindFirstChildOfClass("Humanoid")
         
-        -- Efeito de deslize (Tween) para não ser banido
-        local ts = game:GetService("TweenService")
-        local info = TweenInfo.new(2, Enum.EasingStyle.Sine)
-        local fly = ts:Create(hrp, info, {CFrame = CFrame.new(SavedPos + Vector3.new(0, 5, 0))})
+        b.Text = "BLINDAGEM ATIVA..."
         
-        fly:Play()
-        fly.Completed:Wait()
-        b.Text = "ENTREGUE!"
+        -- Anti-Queda/Stun durante o voo
+        hum.PlatformStand = true 
+        
+        local distance = (hrp.Position - SavedPos).Magnitude
+        local speed = 150 -- Aumente aqui para ser ainda mais rápido
+        local duration = distance / speed
+        
+        local flyTween = ts:Create(hrp, TweenInfo.new(duration, Enum.EasingStyle.Linear), {CFrame = CFrame.new(SavedPos + Vector3.new(0, 10, 0))})
+        
+        flyTween:Play()
+        flyTween.Completed:Wait()
+        
+        hum.PlatformStand = false
+        b.Text = "ENTREGUE COM SUCESSO!"
         task.wait(1)
-        b.Text = "Voar para Base"
+        b.Text = "Voo Blindado para Base"
     else
-        b.Text = "SALVE A BASE ANTES!"
+        b.Text = "ERRO: SALVE A BASE!"
         task.wait(1)
-        b.Text = "Voar para Base"
+        b.Text = "Voo Blindado para Base"
     end
 end)
 
--- 3. AUTO COLLECT
-createBtn("Auto Collect Items", UDim2.new(0.05, 0, 0.68, 0), function(b)
-    _G.CollectBR = not _G.CollectBR
-    b.Text = _G.CollectBR and "COLLECT: ON" or "Auto Collect Items"
+-- 3. AUTO COLLECT TURBO
+createBtn("Auto Collect (Fast)", UDim2.new(0.05, 0, 0.7, 0), function(b)
+    _G.Collect = not _G.Collect
+    b.Text = _G.Collect and "COLLECTOR: ON" or "Auto Collect (Fast)"
     task.spawn(function()
-        while _G.CollectBR do
+        while _G.Collect do
             pcall(function()
                 for _, v in pairs(workspace:GetChildren()) do
                     if v:IsA("Tool") or v:FindFirstChild("Handle") then
-                        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                            firetouchinterest(player.Character.HumanoidRootPart, v:FindFirstChild("Handle") or v, 0)
-                            firetouchinterest(player.Character.HumanoidRootPart, v:FindFirstChild("Handle") or v, 1)
-                        end
+                        firetouchinterest(player.Character.HumanoidRootPart, v:FindFirstChild("Handle") or v, 0)
+                        firetouchinterest(player.Character.HumanoidRootPart, v:FindFirstChild("Handle") or v, 1)
                     end
                 end
             end)
-            task.wait(0.5)
+            task.wait(0.1) -- Muito mais rápido
         end
     end)
 end)
 
--- Abrir/Fechar Menu
 ToggleBtn.MouseButton1Click:Connect(function()
     MainFrame.Visible = not MainFrame.Visible
 end)
