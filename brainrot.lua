@@ -1,4 +1,4 @@
--- [[ MATSUHUB TSUNAMI - STEAL A BRAINROT VIP ]] --
+-- [[ MATSUHUB TSUNAMI - STEAL A BRAINROT COM POSIÇÃO SALVA ]] --
 local player = game.Players.LocalPlayer
 local sgui = Instance.new("ScreenGui", game:GetService("CoreGui"))
 sgui.Name = "MatsuHubBrainrot"
@@ -23,13 +23,42 @@ local function createBtn(t, pos, f)
     local b = Instance.new("TextButton", MainFrame)
     b.Size, b.Position = UDim2.new(0.9, 0, 0, 45), pos
     b.BackgroundColor3, b.Text = DARK_BLUE, t
-    b.TextColor3, b.Font, b.TextSize = WHITE, Enum.Font.GothamBold, 14
+    b.TextColor3, b.Font, b.TextSize = WHITE, Enum.Font.GothamBold, 13
     Instance.new("UICorner", b)
     b.MouseButton1Click:Connect(function() f(b) end)
 end
 
--- 1. AUTO COLLECT
-createBtn("Auto Collect Items", UDim2.new(0.05, 0, 0.22, 0), function(b)
+-- VARIÁVEL PARA GUARDAR A POSIÇÃO
+local SavedCFrame = nil
+
+-- 1. SALVAR LOCALIZAÇÃO (Fique na base e clique aqui)
+createBtn("Salvar Localização", UDim2.new(0.05, 0, 0.22, 0), function(b)
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        SavedCFrame = player.Character.HumanoidRootPart.CFrame
+        b.Text = "LOCAL SALVO! ✅"
+        task.wait(1)
+        b.Text = "Salvar Localização"
+    end
+end)
+
+-- 2. TELEPORT (Volta para o local salvo)
+createBtn("Teleport", UDim2.new(0.05, 0, 0.45, 0), function(b)
+    if SavedCFrame then
+        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+            player.Character.HumanoidRootPart.CFrame = SavedCFrame
+            b.Text = "TELEPORTADO! 🚀"
+            task.wait(0.5)
+            b.Text = "Teleport"
+        end
+    else
+        b.Text = "SALVE UM LOCAL PRIMEIRO!"
+        task.wait(1)
+        b.Text = "Teleport"
+    end
+end)
+
+-- 3. AUTO COLLECT ITEMS
+createBtn("Auto Collect Items", UDim2.new(0.05, 0, 0.68, 0), function(b)
     _G.CollectBrainrot = not _G.CollectBrainrot
     b.Text = _G.CollectBrainrot and "COLLECT: ON" or "Auto Collect Items"
     task.spawn(function()
@@ -49,36 +78,4 @@ createBtn("Auto Collect Items", UDim2.new(0.05, 0, 0.22, 0), function(b)
     end)
 end)
 
--- 2. TELEPORTE PARA BASE (ENTREGAR)
-createBtn("Entregar na Base", UDim2.new(0.05, 0, 0.45, 0), function(b)
-    pcall(function()
-        local root = player.Character.HumanoidRootPart
-        -- Procura o cofre/base que pertence ao jogador
-        for _, v in pairs(workspace:GetDescendants()) do
-            if v.Name == "Owner" and v.Value == player.Name then
-                local base = v.Parent -- O modelo da base
-                if base and base:FindFirstChild("TouchPart") or base:FindFirstChild("Deliver") then
-                    root.CFrame = (base:FindFirstChild("TouchPart") or base.PrimaryPart).CFrame
-                    b.Text = "ENTREGUE!"
-                    task.wait(1)
-                    b.Text = "Entregar na Base"
-                end
-            end
-        end
-    end)
-end)
-
--- 3. SPEED TURBO
-createBtn("Speed Turbo", UDim2.new(0.05, 0, 0.68, 0), function(b)
-    _G.BrainSpeed = not _G.BrainSpeed
-    b.Text = _G.BrainSpeed and "SPEED: MAX" or "Speed Turbo"
-    task.spawn(function()
-        while _G.BrainSpeed do
-            if player.Character and player.Character:FindFirstChild("Humanoid") then
-                player.Character.Humanoid.WalkSpeed = 80
-            end
-            task.wait(0.5)
-        end
-        player.Character.Humanoid.WalkSpeed = 16
-    end)
-end)
+-- Botão para fechar/abrir o menu continua funcionando
