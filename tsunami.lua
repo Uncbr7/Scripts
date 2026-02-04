@@ -1,4 +1,4 @@
--- [[ MATSUHUB - FUJA DO TSUNAMI VÁ MAIS UM ]] --
+-- [[ MATSUHUB - FUJA DO TSUNAMI AUTO SECRET ]] --
 local player = game.Players.LocalPlayer
 local sgui = Instance.new("ScreenGui", game:GetService("CoreGui"))
 local MainFrame = Instance.new("Frame", sgui)
@@ -54,30 +54,38 @@ createBtn("Liberar Vips", UDim2.new(0.05, 0, 0.35, 0), function(b)
     end)
 end)
 
--- Botão VÁ MAIS UM (Teleporte por buracos)
-createBtn("Vá mais um", UDim2.new(0.05, 0, 0.65, 0), function(b)
+-- Botão AUTO SECRET
+createBtn("AUTO SECRET", UDim2.new(0.05, 0, 0.65, 0), function(b)
     b.Text, b.TextColor3 = "ATIVO!", RED
     
     task.spawn(function()
-        -- Procura os pontos de vitória ou partes numeradas
-        local targetParts = {}
-        for _, v in pairs(workspace:GetDescendants()) do
-            if v:IsA("BasePart") and (v.Name:find("Win") or v.Name:find("End") or v.Name:find("Goal")) then
-                table.insert(targetParts, v)
-            end
-        end
-
-        -- Se achar partes, vai pra elas, senão tenta os checkpoints
-        if #targetParts > 0 then
-            for _, part in pairs(targetParts) do
-                if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
-                    player.Character.HumanoidRootPart.CFrame = part.CFrame + Vector3.new(0, 3, 0)
-                    task.wait(0.3)
+        local char = player.Character
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        
+        if hrp then
+            -- 1. Voa para o alto para sair do mapa
+            hrp.CFrame = hrp.CFrame * CFrame.new(0, 50, 0)
+            task.wait(0.2)
+            
+            -- 2. Busca o local do segredo (Secret/Egg/Badge)
+            local secretPos = nil
+            for _, v in pairs(workspace:GetDescendants()) do
+                if v:IsA("BasePart") and (v.Name:lower():find("secret") or v.Name:lower():find("badge") or v.Name:lower():find("egg")) then
+                    secretPos = v.CFrame
+                    break
                 end
             end
+            
+            -- 3. Se não achar por nome, vai para uma coordenada comum de secretos desse mapa
+            if not secretPos then
+                secretPos = CFrame.new(500, 100, 500) -- Coordenada reserva
+            end
+            
+            -- 4. Teleporte suave para o buraco secreto
+            hrp.CFrame = secretPos + Vector3.new(0, 5, 0)
         end
         
         task.wait(1)
-        b.Text, b.TextColor3 = "Vá mais um", WHITE
+        b.Text, b.TextColor3 = "AUTO SECRET", WHITE
     end)
 end)
