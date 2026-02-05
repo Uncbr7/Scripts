@@ -1,8 +1,8 @@
 local player = game.Players.LocalPlayer
 local sgui = Instance.new("ScreenGui", game:GetService("CoreGui"))
-sgui.Name = "MatsuHub_Global"
+sgui.Name = "MatsuHub_Global_v2"
 
--- BOTÃO M
+-- BOTÃO M (ABRIR/FECHAR)
 local ToggleBtn = Instance.new("TextButton", sgui)
 ToggleBtn.Size = UDim2.new(0, 45, 0, 45)
 ToggleBtn.Position = UDim2.new(0, 15, 0, 150)
@@ -13,55 +13,56 @@ ToggleBtn.Font = Enum.Font.GothamBold
 ToggleBtn.TextSize = 25
 Instance.new("UICorner", ToggleBtn)
 
--- MENU
+-- MENU PRINCIPAL
 local MainFrame = Instance.new("Frame", sgui)
-MainFrame.Size = UDim2.new(0, 260, 0, 200)
-MainFrame.Position = UDim2.new(0.5, -130, 0.5, -100)
+MainFrame.Size = UDim2.new(0, 260, 0, 180)
+MainFrame.Position = UDim2.new(0.5, -130, 0.5, -90)
 MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
 local stroke = Instance.new("UIStroke", MainFrame)
 stroke.Color = Color3.fromRGB(0, 85, 255)
 stroke.Thickness = 3
 Instance.new("UICorner", MainFrame)
 
--- FUNÇÃO INVISÍVEL (Ninguém te vê)
+local Title = Instance.new("TextLabel", MainFrame)
+Title.Size = UDim2.new(1, 0, 0, 50)
+Title.Text = "MatsuHub Global"
+Title.TextColor3 = Color3.new(1, 1, 1)
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 18
+Title.BackgroundTransparency = 1
+
+-- FUNÇÃO INVISIBILIDADE (Método que remove o Character do servidor)
 local InvBtn = Instance.new("TextButton", MainFrame)
-InvBtn.Size = UDim2.new(0.9, 0, 0, 50)
-InvBtn.Position = UDim2.new(0.05, 0, 0.2, 0)
-InvBtn.Text = "Ficar Invisível"
-InvBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+InvBtn.Size = UDim2.new(0.9, 0, 0, 60)
+InvBtn.Position = UDim2.new(0.05, 0, 0.4, 0)
+InvBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+InvBtn.Text = "Ficar Invisível (Real)"
 InvBtn.TextColor3 = Color3.new(1, 1, 1)
 InvBtn.Font = Enum.Font.GothamBold
 Instance.new("UICorner", InvBtn)
 
 InvBtn.MouseButton1Click:Connect(function()
     local char = player.Character
-    if char:FindFirstChild("UpperTorso") then char.UpperTorso:Destroy() end
-    if char:FindFirstChild("Torso") then char.Torso:Destroy() end
-    InvBtn.Text = "VOCÊ ESTÁ INVISÍVEL"
-    InvBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
-end)
-
--- FUNÇÃO NOCLIP (Atravessar Paredes)
-local NcBtn = Instance.new("TextButton", MainFrame)
-NcBtn.Size = UDim2.new(0.9, 0, 0, 50)
-NcBtn.Position = UDim2.new(0.05, 0, 0.55, 0)
-NcBtn.Text = "Atravessar Paredes"
-NcBtn.BackgroundColor3 = Color3.fromRGB(0, 85, 255)
-NcBtn.TextColor3 = Color3.new(1, 1, 1)
-NcBtn.Font = Enum.Font.GothamBold
-Instance.new("UICorner", NcBtn)
-
-local noclip = false
-NcBtn.MouseButton1Click:Connect(function()
-    noclip = not noclip
-    NcBtn.Text = noclip and "Noclip: ON" or "Atravessar Paredes"
-    game:GetService("RunService").Stepped:Connect(function()
-        if noclip then
-            for _, v in pairs(player.Character:GetDescendants()) do
-                if v:IsA("BasePart") then v.CanCollide = false end
-            end
+    if char then
+        -- Salva sua posição atual
+        local oldPos = char.HumanoidRootPart.CFrame
+        
+        -- Deleta o torso para "quebrar" a visão dos outros jogadores
+        if char:FindFirstChild("UpperTorso") then -- R15
+            char.UpperTorso:Destroy()
+            InvBtn.Text = "INVISÍVEL ATIVADO"
+            InvBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+        elseif char:FindFirstChild("Torso") then -- R6
+            char.Torso:Destroy()
+            InvBtn.Text = "INVISÍVEL ATIVADO"
+            InvBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+        else
+            InvBtn.Text = "Erro: Já Invisível?"
         end
-    end)
+    end
 end)
 
-ToggleBtn.MouseButton1Click:Connect(function() MainFrame.Visible = not MainFrame.Visible end)
+-- LÓGICA DO BOTÃO M
+ToggleBtn.MouseButton1Click:Connect(function()
+    MainFrame.Visible = not MainFrame.Visible
+end)
